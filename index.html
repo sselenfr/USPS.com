@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- COMPLETE REDESIGN: USPS Digital Style Guide compliant -->
+  <meta name="description" content="USPS.com Strategic Improvement Epics — A requirements overview covering operational efficiency, content management, UI modernization, search enhancement, and e-commerce optimization." />
+  <title>USPS.com – Strategic Improvement Epics</title>
+
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ============================================================
+       USPS Design Tokens
+       Brand source: USPS Brand Identity Program
+    ============================================================ */
+    :root {
+      --usps-blue:       #004B87;   /* USPS Primary Blue */
+      --usps-dark-blue:  #002D5C;   /* Darkened for hover depth */
+      --usps-red:        #DA291C;   /* USPS Eagle Red */
+      --usps-dark-red:   #B01F14;   /* Darkened for hover depth */
+      --usps-navy:       #1C2951;   /* Header/footer navy */
+      --usps-white:      #FFFFFF;
+      --usps-off-white:  #F5F7FA;
+      --usps-light-blue: #E3EDF7;
+      --usps-gray-100:   #F5F5F5;
+      --usps-gray-200:   #E8E8E8;
+      --usps-gray-400:   #9E9E9E;
+      --usps-gray-700:   #4A4A4A;
+      --usps-gray-900:   #1A1A1A;
+      --usps-text:       #1F1F1F;
+      --usps-link:       #0056A3;
+
+      --radius-sm:  4px;
+      --radius-md:  8px;
+      --radius-lg:  12px;
+      --shadow-sm:  0 1px 3px rgba(0,0,0,0.10);
+      --shadow-md:  0 4px 12px rgba(0,0,0,0.12);
+      --shadow-lg:  0 8px 24px rgba(0,0,0,0.14);
+      --transition: 0.2s ease;
+
+      --font-body: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+      --font-mono: 'Courier New', monospace;
+
+      --max-width: 1200px;
+      --section-gap: 4rem;
+    }
+
+    /* ============================================================
+       Reset & Base
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--usps-text);
+      background: var(--usps-white);
+    }
+
+    img { max-width: 100%; height: auto; display: block; }
+
+    a {
+      color: var(--usps-link);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    a:hover { color: var(--usps-dark-blue); }
+
+    /* ============================================================
+       508 – Skip Navigation
+    ============================================================ */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 1rem;
+      z-index: 9999;
+      background: var(--usps-navy);
+      color: var(--usps-white);
+      padding: 0.75rem 1.25rem;
+      font-weight: 600;
+      border-radius: 0 0 var(--radius-md) var(--radius-md);
+      text-decoration: none;
+      transition: top var(--transition);
+    }
+    .skip-link:focus { top: 0; }
+
+    /* ============================================================
+       508 – Focus Styles (WCAG 2.4.11 — visible focus)
+    ============================================================ */
+    :focus-visible {
+      outline: 3px solid #FFB700;
+      outline-offset: 3px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* ============================================================
+       Layout Utilities
+    ============================================================ */
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px; height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    /* ============================================================
+       Notification Banner
+    ============================================================ */
+    .notification-banner {
+      background: var(--usps-red);
+      color: var(--usps-white);
+      text-align: center;
+      padding: 0.5rem 1.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    .notification-banner a {
+      color: var(--usps-white);
+      text-decoration: underline;
+    }
+
+    /* ============================================================
+       Site Header
+    ============================================================ */
+    .site-header {
+      background: var(--usps-navy);
+      border-bottom: 4px solid var(--usps-red);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+
+    /* USPS Eagle + Wordmark (CSS-only, accessible) */
+    .site-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+
+    .logo-eagle {
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+    }
+
+    .logo-wordmark {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+    .logo-wordmark .wordmark-usps {
+      color: var(--usps-white);
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+    }
+    .logo-wordmark .wordmark-tagline {
+      color: #A8C0D6;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    /* Header utility tools */
+    .header-tools {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .header-tools a {
+      color: #A8C0D6;
+      font-size: 0.875rem;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: color var(--transition);
+    }
+    .header-tools a:hover { color: var(--usps-white); }
+    .header-tools a svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    /* ============================================================
+       Primary Navigation
+    ============================================================ */
+    .primary-nav {
+      background: var(--usps-blue);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      overflow-x: auto;
+    }
+
+    .primary-nav a {
+      display: block;
+      padding: 0.875rem 1.1rem;
+      color: var(--usps-white);
+      text-decoration: none;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      white-space: nowrap;
+      border-bottom: 3px solid transparent;
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .primary-nav a:hover,
+    .primary-nav a[aria-current="page"] {
+      background: var(--usps-dark-blue);
+      border-bottom-color: #FFB700;
+    }
+    .primary-nav a[aria-current="page"] {
+      color: #FFE680;
+    }
+
+    /* ============================================================
+       Hero
+    ============================================================ */
+    .hero {
+      background: linear-gradient(135deg, var(--usps-navy) 0%, var(--usps-blue) 60%, #1565a8 100%);
+      color: var(--usps-white);
+      padding: 4rem 1.5rem 3.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -80px;
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(218,41,28,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: 10%;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-eyebrow {
+      display: inline-block;
+      background: var(--usps-red);
+      color: var(--usps-white);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.75rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 1.25rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.875rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-size: clamp(1rem, 2vw, 1.1875rem);
+      color: #C5D8EB;
+      max-width: 640px;
+      margin-bottom: 2rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-meta-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .hero-meta-item .meta-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--usps-white);
+      line-height: 1;
+    }
+    .hero-meta-item .meta-label {
+      font-size: 0.8125rem;
+      color: #A8C0D6;
+      margin-top: 0.2rem;
+    }
+
+    /* ============================================================
+       Section Divider
+    ============================================================ */
+    .section-divider {
+      height: 4px;
+      background: linear-gradient(90deg, var(--usps-red) 0%, var(--usps-blue) 50%, var(--usps-navy) 100%);
+    }
+
+    /* ============================================================
+       Overview Grid
+    ============================================================ */
+    .overview-section {
+      padding: var(--section-gap) 1.5rem;
+      background: var(--usps-off-white);
+    }
+
+    .section-header {
+      max-width: var(--max-width);
+      margin: 0 auto 2.5rem;
+    }
+    .section-header h2 {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      color: var(--usps-navy);
+      font-weight: 700;
+      border-left: 5px solid var(--usps-red);
+      padding-left: 0.875rem;
+      line-height: 1.2;
+    }
+    .section-header p {
+      margin-top: 0.75rem;
+      color: var(--usps-gray-700);
+      max-width: 680px;
+    }
+
+    .epics-grid {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    /* Epic Summary Cards */
+    .epic-card {
+      background: var(--usps-white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--usps-gray-200);
+      padding: 1.75rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform var(--transition), box-shadow var(--transition);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .epic-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+    .epic-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+    }
+
+    .epic-card:nth-child(1)::before { background: var(--usps-red); }
+    .epic-card:nth-child(2)::before { background: #0077C8; }
+    .epic-card:nth-child(3)::before { background: #006B3C; }
+    .epic-card:nth-child(4)::before { background: #7B3FA0; }
+    .epic-card:nth-child(5)::before { background: #C96A00; }
+
+    .epic-number {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--usps-gray-400);
+    }
+
+    .epic-icon {
+      width: 48px; height: 48px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .epic-icon svg { width: 26px; height: 26px; }
+
+    .epic-card:nth-child(1) .epic-icon { background: #FFF0EE; color: var(--usps-red); }
+    .epic-card:nth-child(2) .epic-icon { background: #E6F2FF; color: #0077C8; }
+    .epic-card:nth-child(3) .epic-icon { background: #E8F5EE; color: #006B3C; }
+    .epic-card:nth-child(4) .epic-icon { background: #F3EDF8; color: #7B3FA0; }
+    .epic-card:nth-child(5) .epic-icon { background: #FDF3E7; color: #C96A00; }
+
+    .epic-card h3 {
+      font-size: 1.0625rem;
+      font-weight: 700;
+      color: var(--usps-navy);
+      line-height: 1.3;
+    }
+
+    .epic-card p {
+      font-size: 0.9rem;
+      color: var(--usps-gray-700);
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--usps-link);
+      text-decoration: none;
+      margin-top: 0.25rem;
+      transition: gap var(--transition), color var(--transition);
+    }
+    .card-link:hover { gap: 0.55rem; color: var(--usps-dark-blue); }
+    .card-link svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* ============================================================
+       Epic Detail Sections
+    ============================================================ */
+    .epics-detail {
+      padding: var(--section-gap) 1.5rem;
+    }
+
+    .detail-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+
+    /* Accordion */
+    .epic-accordion {
+      background: var(--usps-white);
+      border: 1px solid var(--usps-gray-200);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .accordion-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: transparent;
+      border: none;
+      padding: 1.5rem 1.75rem;
+      cursor: pointer;
+      text-align: left;
+      transition: background var(--transition);
+      position: relative;
+    }
+    .accordion-trigger:hover { background: var(--usps-gray-100); }
+    .accordion-trigger[aria-expanded="true"] { background: var(--usps-light-blue); }
+
+    .accordion-badge {
+      flex-shrink: 0;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--usps-blue);
+      color: var(--usps-white);
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .epic-accordion:nth-child(1) .accordion-badge { background: var(--usps-red); }
+    .epic-accordion:nth-child(2) .accordion-badge { background: #0077C8; }
+    .epic-accordion:nth-child(3) .accordion-badge { background: #006B3C; }
+    .epic-accordion:nth-child(4) .accordion-badge { background: #7B3FA0; }
+    .epic-accordion:nth-child(5) .accordion-badge { background: #C96A00; }
+
+    .accordion-title {
+      flex: 1;
+      font-size: clamp(1rem, 2vw, 1.125rem);
+      font-weight: 700;
+      color: var(--usps-navy);
+      line-height: 1.3;
+    }
+
+    .accordion-chevron {
+      flex-shrink: 0;
+      width: 22px; height: 22px;
+      color: var(--usps-gray-700);
+      transition: transform 0.25s ease;
+    }
+    .accordion-trigger[aria-expanded="true"] .accordion-chevron {
+      transform: rotate(180deg);
+    }
+
+    .accordion-panel {
+      padding: 0 1.75rem 1.75rem;
+      display: none;
+    }
+    .accordion-panel.is-open { display: block; }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      margin-top: 0.25rem;
+    }
+
+    .detail-card {
+      background: var(--usps-gray-100);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+      border-left: 4px solid var(--usps-blue);
+    }
+    .epic-accordion:nth-child(1) .detail-card { border-left-color: var(--usps-red); }
+    .epic-accordion:nth-child(2) .detail-card { border-left-color: #0077C8; }
+    .epic-accordion:nth-child(3) .detail-card { border-left-color: #006B3C; }
+    .epic-accordion:nth-child(4) .detail-card { border-left-color: #7B3FA0; }
+    .epic-accordion:nth-child(5) .detail-card { border-left-color: #C96A00; }
+
+    .detail-card h4 {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--usps-gray-700);
+      margin-bottom: 0.5rem;
+    }
+    .detail-card p {
+      font-size: 0.9375rem;
+      color: var(--usps-text);
+      line-height: 1.65;
+    }
+
+    /* User Story blockquote */
+    .user-story {
+      margin-top: 1.25rem;
+      background: var(--usps-light-blue);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      border-left: 4px solid var(--usps-blue);
+      position: relative;
+    }
+    .epic-accordion:nth-child(1) .user-story { border-left-color: var(--usps-red); background: #FFF7F6; }
+    .epic-accordion:nth-child(2) .user-story { border-left-color: #0077C8; background: #EBF5FF; }
+    .epic-accordion:nth-child(3) .user-story { border-left-color: #006B3C; background: #EAF6EE; }
+    .epic-accordion:nth-child(4) .user-story { border-left-color: #7B3FA0; background: #F6F0FC; }
+    .epic-accordion:nth-child(5) .user-story { border-left-color: #C96A00; background: #FEF6EC; }
+
+    .user-story-label {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--usps-gray-700);
+      margin-bottom: 0.5rem;
+    }
+    .user-story blockquote {
+      font-size: 0.9375rem;
+      color: var(--usps-text);
+      font-style: italic;
+      line-height: 1.7;
+    }
+    .user-story blockquote::before {
+      content: '\201C';
+      font-size: 1.5rem;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 0;
+      vertical-align: -0.4em;
+      margin-right: 0.15em;
+      opacity: 0.35;
+    }
+
+    /* ============================================================
+       Priority Matrix Table
+    ============================================================ */
+    .matrix-section {
+      background: var(--usps-gray-100);
+      padding: var(--section-gap) 1.5rem;
+      border-top: 1px solid var(--usps-gray-200);
+    }
+
+    .table-wrapper {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--usps-white);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      font-size: 0.9375rem;
+    }
+    caption {
+      text-align: left;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--usps-navy);
+      margin-bottom: 0.75rem;
+      padding: 0 0.25rem;
+    }
+    thead th {
+      background: var(--usps-navy);
+      color: var(--usps-white);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.875rem 1.25rem;
+      text-align: left;
+      white-space: nowrap;
+    }
+    tbody td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--usps-gray-200);
+      vertical-align: top;
+      color: var(--usps-text);
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:nth-child(even) { background: var(--usps-gray-100); }
+    tbody tr:hover { background: var(--usps-light-blue); }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.65rem;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .badge-high   { background: #FDE8E6; color: #9B1C13; }
+    .badge-medium { background: #FFF3CD; color: #7D5A00; }
+    .badge-low    { background: #E6F4EA; color: #1A6332; }
+
+    .priority-dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      margin-right: 0.4em;
+      vertical-align: middle;
+    }
+    .dot-critical { background: var(--usps-red); }
+    .dot-high     { background: #E07800; }
+    .dot-standard { background: var(--usps-blue); }
+
+    /* ============================================================
+       CTA Banner
+    ============================================================ */
+    .cta-section {
+      background: linear-gradient(135deg, var(--usps-blue) 0%, var(--usps-navy) 100%);
+      padding: 3.5rem 1.5rem;
+      text-align: center;
+    }
+    .cta-inner {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    .cta-section h2 {
+      color: var(--usps-white);
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .cta-section p {
+      color: #C5D8EB;
+      font-size: 1.0625rem;
+      margin-bottom: 2rem;
+    }
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.825rem 1.75rem;
+      border-radius: var(--radius-md);
+      font-family: var(--font-body);
+      font-size: 0.9375rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      border: 2px solid transparent;
+      transition: background var(--transition), color var(--transition), border-color var(--transition), transform var(--transition);
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary {
+      background: var(--usps-red);
+      color: var(--usps-white);
+      border-color: var(--usps-red);
+    }
+    .btn-primary:hover {
+      background: var(--usps-dark-red);
+      border-color: var(--usps-dark-red);
+      color: var(--usps-white);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--usps-white);
+      border-color: rgba(255,255,255,0.6);
+    }
+    .btn-outline:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: var(--usps-white);
+      color: var(--usps-white);
+    }
+
+    /* ============================================================
+       Footer
+    ============================================================ */
+    .site-footer {
+      background: var(--usps-navy);
+      color: #A8C0D6;
+      padding: 3rem 1.5rem 1.5rem;
+    }
+
+    .footer-grid {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 768px) {
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .footer-brand { grid-column: 1 / -1; }
+    }
+    @media (max-width: 480px) {
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+
+    .footer-brand .brand-name {
+      color: var(--usps-white);
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.5rem;
+    }
+    .footer-brand p {
+      font-size: 0.875rem;
+      line-height: 1.6;
+      max-width: 320px;
+    }
+
+    .footer-col h3 {
+      color: var(--usps-white);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.875rem;
+    }
+    .footer-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .footer-col a {
+      color: #A8C0D6;
+      font-size: 0.875rem;
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    .footer-col a:hover { color: var(--usps-white); }
+
+    .footer-bar {
+      max-width: var(--max-width);
+      margin: 2rem auto 0;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(255,255,255,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      font-size: 0.8125rem;
+    }
+    .footer-bar a { color: #A8C0D6; text-decoration: none; }
+    .footer-bar a:hover { color: var(--usps-white); text-decoration: underline; }
+
+    /* ============================================================
+       Responsive
+    ============================================================ */
+    @media (max-width: 768px) {
+      .header-tools { display: none; }
+      .hero { padding: 2.5rem 1.25rem 2rem; }
+      .hero-meta { gap: 1.25rem; }
+      .overview-section, .epics-detail, .matrix-section { padding: 2.5rem 1.25rem; }
+    }
+
+    @media (max-width: 480px) {
+      .nav-inner { padding: 0 1rem; }
+      .epics-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ============================================================
+       Print
+    ============================================================ */
+    @media print {
+      .skip-link, .notification-banner, .primary-nav,
+      .cta-section, .btn, .header-tools { display: none !important; }
+      .accordion-panel { display: block !important; }
+      body { font-size: 11pt; color: #000; }
+      .epic-card, .epic-accordion { box-shadow: none; border: 1px solid #ccc; }
+      .hero { background: #004B87; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 508: Skip Navigation -->
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <!-- Notification Banner -->
+  <div role="region" aria-label="Site notification">
+    <p class="notification-banner">
+      This document represents strategic improvement requirements for USPS.com &mdash;
+      <a href="#epics-overview">View all 5 epics &darr;</a>
+    </p>
+  </div>
+
+  <!-- Site Header -->
+  <header class="site-header" role="banner">
+    <div class="header-inner">
+      <a href="#" class="site-logo" aria-label="USPS – United States Postal Service, go to homepage">
+        <!-- USPS Eagle SVG (simplified, accessible) -->
+        <svg class="logo-eagle" viewBox="0 0 52 52" aria-hidden="true" focusable="false" role="img">
+          <circle cx="26" cy="26" r="26" fill="#DA291C"/>
+          <polygon points="26,8 32,20 46,20 35,29 39,43 26,34 13,43 17,29 6,20 20,20" fill="#FFFFFF" stroke="none"/>
+        </svg>
+        <div class="logo-wordmark">
+          <span class="wordmark-usps" aria-hidden="true">USPS</span>
+          <span class="wordmark-tagline" aria-hidden="true">United States Postal Service</span>
+        </div>
+      </a>
+
+      <nav class="header-tools" aria-label="Utility navigation">
+        <a href="#">
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Search
+        </a>
+        <a href="#">
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Sign In
+        </a>
+        <a href="#">
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          Store
+        </a>
+      </nav>
+    </div>
+
+    <!-- Primary Nav -->
+    <nav class="primary-nav" aria-label="Primary navigation">
+      <div class="nav-inner">
+        <a href="#" aria-current="page">Requirements</a>
+        <a href="#">Send &amp; Ship</a>
+        <a href="#">Track &amp; Manage</a>
+        <a href="#">Postal Store</a>
+        <a href="#">Business</a>
+        <a href="#">Informed Delivery</a>
+        <a href="#">About USPS</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ============================================================
+       Main Content
+  ============================================================ -->
+  <main id="main-content" tabindex="-1">
+
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="hero-content">
+        <span class="hero-eyebrow" aria-label="Document type: Strategic Requirements">Strategic Requirements</span>
+        <h1 id="hero-heading">USPS.com<br>Strategic Improvement Epics</h1>
+        <p>
+          A prioritized set of initiatives designed to reduce operational costs, lower maintenance
+          effort, and deliver a markedly improved experience for every customer visiting USPS.com.
+        </p>
+        <dl class="hero-meta">
+          <div class="hero-meta-item">
+            <dt class="meta-label">Epics Defined</dt>
+            <dd class="meta-value">5</dd>
+          </div>
+          <div class="hero-meta-item">
+            <dt class="meta-label">Pages Audited</dt>
+            <dd class="meta-value">95</dd>
+          </div>
+          <div class="hero-meta-item">
+            <dt class="meta-label">Content-Focused Pages</dt>
+            <dd class="meta-value">68%</dd>
+          </div>
+          <div class="hero-meta-item">
+            <dt class="meta-label">Low-LOE Maintenance</dt>
+            <dd class="meta-value">79%</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <div class="section-divider" role="presentation" aria-hidden="true"></div>
+
+    <!-- ============================================================
+         Epics Overview Cards
+    ============================================================ -->
+    <section id="epics-overview" class="overview-section" aria-labelledby="overview-heading">
+      <div class="section-header">
+        <h2 id="overview-heading">Epics at a Glance</h2>
+        <p>
+          Select an epic below to explore its focus, rationale, and example user story. Each epic targets
+          measurable improvements in both operational efficiency and user satisfaction.
+        </p>
+      </div>
+
+      <ul class="epics-grid" aria-label="Epic summary cards">
+
+        <!-- Card 1 -->
+        <li class="epic-card">
+          <span class="epic-number" aria-label="Epic 1 of 5">Epic 01</span>
+          <div class="epic-icon" aria-hidden="true">
+            <!-- Tool/Wrench icon -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <h3>Optimize High-Impact Interactive Tools &amp; User Journeys</h3>
+          <p>Streamline tracking, scheduling, and pickup tools to reduce support calls and maintenance overhead.</p>
+          <a class="card-link" href="#epic-1-detail">
+            View details
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </li>
+
+        <!-- Card 2 -->
+        <li class="epic-card">
+          <span class="epic-number" aria-label="Epic 2 of 5">Epic 02</span>
+          <div class="epic-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <h3>Centralize &amp; Streamline Content Management and IA</h3>
+          <p>Reduce the cost of content updates and improve discoverability with a journey-centric structure.</p>
+          <a class="card-link" href="#epic-2-detail">
+            View details
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </li>
+
+        <!-- Card 3 -->
+        <li class="epic-card">
+          <span class="epic-number" aria-label="Epic 3 of 5">Epic 03</span>
+          <div class="epic-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          </div>
+          <h3>Modernize UI &amp; Achieve Universal Brand &amp; 508 Compliance</h3>
+          <p>Eliminate technical debt, standardize the design system, and deliver equitable access for all users.</p>
+          <a class="card-link" href="#epic-3-detail">
+            View details
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </li>
+
+        <!-- Card 4 -->
+        <li class="epic-card">
+          <span class="epic-number" aria-label="Epic 4 of 5">Epic 04</span>
+          <div class="epic-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <h3>Enhance Cross-Site Search &amp; Navigation for Discoverability</h3>
+          <p>Surface relevant results faster, reduce navigation confusion, and lower the support inquiry burden.</p>
+          <a class="card-link" href="#epic-4-detail">
+            View details
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </li>
+
+        <!-- Card 5 -->
+        <li class="epic-card">
+          <span class="epic-number" aria-label="Epic 5 of 5">Epic 05</span>
+          <div class="epic-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          </div>
+          <h3>Refine E-commerce &amp; Business Service Modules</h3>
+          <p>Optimize transactional workflows for retail and business customers to increase self-service completion rates.</p>
+          <a class="card-link" href="#epic-5-detail">
+            View details
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </li>
+
+      </ul>
+    </section>
+
+    <!-- ============================================================
+         Epic Detail Accordions
+    ============================================================ -->
+    <section class="epics-detail" aria-labelledby="detail-heading">
+      <div class="section-header" style="max-width: var(--max-width); margin:0 auto 2rem;">
+        <h2 id="detail-heading">Epic Details</h2>
+        <p>Expand each epic to review its full focus, rationale, and example user story.</p>
+      </div>
+
+      <div class="detail-inner">
+
+        <!-- ── Epic 1 ── -->
+        <article class="epic-accordion" id="epic-1-detail">
+          <button
+            class="accordion-trigger"
+            aria-expanded="true"
+            aria-controls="epic-1-panel"
+            id="epic-1-btn"
+            type="button"
+          >
+            <span class="accordion-badge" aria-hidden="true">1</span>
+            <span class="accordion-title">
+              Optimize High-Impact Interactive Tools &amp; User Journeys for Efficiency
+            </span>
+            <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div
+            id="epic-1-panel"
+            class="accordion-panel is-open"
+            role="region"
+            aria-labelledby="epic-1-btn"
+          >
+            <div class="detail-grid">
+              <div class="detail-card">
+                <h4>Focus</h4>
+                <p>This epic targets high-usage interactive tools and critical user journeys that currently have a higher Level of Effort (LOE) to Maintain or significantly impact user satisfaction. By streamlining their design, functionality, and integration, the goal is to reduce the need for customer support and decrease ongoing maintenance costs.</p>
+              </div>
+              <div class="detail-card">
+                <h4>Rationale</h4>
+                <p>Pages like <strong>"USPS Tracking – Package Tracking Page"</strong> and <strong>"USPS Tracking – Enter Tracking Number Form"</strong> have the highest views and active users. <strong>"Schedule a Pickup"</strong> and <strong>"Schedule an Appointment"</strong> are classified as High LOE. Optimizing these tools (Epic 2.1 and Epic 2.2) directly addresses operational efficiency and user satisfaction.</p>
+              </div>
+            </div>
+            <div class="user-story" role="note" aria-label="Example user story for Epic 1">
+              <span class="user-story-label">Example User Story</span>
+              <blockquote>
+                As a USPS customer, I want a streamlined process for scheduling or modifying a package pickup so that I can arrange for mail collection conveniently, reducing potential errors and support calls.
+              </blockquote>
+            </div>
+          </div>
+        </article>
+
+        <!-- ── Epic 2 ── -->
+        <article class="epic-accordion" id="epic-2-detail">
+          <button
+            class="accordion-trigger"
+            aria-expanded="false"
+            aria-controls="epic-2-panel"
+            id="epic-2-btn"
+            type="button"
+          >
+            <span class="accordion-badge" aria-hidden="true">2</span>
+            <span class="accordion-title">
+              Centralize &amp; Streamline Content Management and Information Architecture
+            </span>
+            <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div
+            id="epic-2-panel"
+            class="accordion-panel"
+            role="region"
+            aria-labelledby="epic-2-btn"
+          >
+            <div class="detail-grid">
+              <div class="detail-card">
+                <h4>Focus</h4>
+                <p>This epic aims to significantly reduce the effort and cost associated with updating and maintaining informational content across the site. It also improves user experience by ensuring content is clear, concise, and easy to find, reducing confusion and support burden.</p>
+              </div>
+              <div class="detail-card">
+                <h4>Rationale</h4>
+                <p>The audit found that roughly <strong>68% of audited pages are content-focused</strong>, and approximately 79% of page maintenance is classified as "Low" LOE. However, pages can be "very dense and text heavy" or "link heavy". Structuring content in a journey-centric way (Epic 1.1 and Epic 1.3) will lower routine update time and enhance content discoverability.</p>
+              </div>
+            </div>
+            <div class="user-story" role="note" aria-label="Example user story for Epic 2">
+              <span class="user-story-label">Example User Story</span>
+              <blockquote>
+                As a content manager, I want an efficient process for updating product information and images (e.g., stamps, shipping supplies) so that new items and seasonal changes are reflected quickly on the Postal Store, specifically addressing the "High" LOE for "Buy Stamps."
+              </blockquote>
+            </div>
+          </div>
+        </article>
+
+        <!-- ── Epic 3 ── -->
+        <article class="epic-accordion" id="epic-3-detail">
+          <button
+            class="accordion-trigger"
+            aria-expanded="false"
+            aria-controls="epic-3-panel"
+            id="epic-3-btn"
+            type="button"
+          >
+            <span class="accordion-badge" aria-hidden="true">3</span>
+            <span class="accordion-title">
+              Modernize User Interface &amp; Achieve Universal Brand and Accessibility Compliance
+            </span>
+            <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div
+            id="epic-3-panel"
+            class="accordion-panel"
+            role="region"
+            aria-labelledby="epic-3-btn"
+          >
+            <div class="detail-grid">
+              <div class="detail-card">
+                <h4>Focus</h4>
+                <p>Reduce technical debt and future rework costs by establishing a consistent, modern design across all USPS.com pages. Simultaneously, ensure compliance with <strong>Section 508 accessibility standards</strong> to serve all users equitably and mitigate legal risks.</p>
+              </div>
+              <div class="detail-card">
+                <h4>Rationale</h4>
+                <p>Several pages do not fully align with the USPS brand style guide or have outdated designs, requiring fragmented maintenance and impacting brand perception. The audit explicitly notes multiple pages lack clear accessibility for vision-impaired users. Implementing <strong>Epic 5.1</strong> (UI Modernization) and <strong>Epic 4.2</strong> (508 Compliance) standardizes the visual language and ensures equitable access.</p>
+              </div>
+            </div>
+            <div class="user-story" role="note" aria-label="Example user story for Epic 3">
+              <span class="user-story-label">Example User Story</span>
+              <blockquote>
+                As a USPS.com user, I want a consistent and modern look and feel across all pages so that the website appears professional and easy to use, addressing outdated designs.
+              </blockquote>
+            </div>
+          </div>
+        </article>
+
+        <!-- ── Epic 4 ── -->
+        <article class="epic-accordion" id="epic-4-detail">
+          <button
+            class="accordion-trigger"
+            aria-expanded="false"
+            aria-controls="epic-4-panel"
+            id="epic-4-btn"
+            type="button"
+          >
+            <span class="accordion-badge" aria-hidden="true">4</span>
+            <span class="accordion-title">
+              Enhance Cross-Site Search and Navigation for Discoverability
+            </span>
+            <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div
+            id="epic-4-panel"
+            class="accordion-panel"
+            role="region"
+            aria-labelledby="epic-4-btn"
+          >
+            <div class="detail-grid">
+              <div class="detail-card">
+                <h4>Focus</h4>
+                <p>Improve user experience by making it easier and faster for customers to find information and services, thereby reducing frustration and potential support inquiries. Cost reduction comes from decreased support load and more efficient self-service pathways.</p>
+              </div>
+              <div class="detail-card">
+                <h4>Rationale</h4>
+                <p>Audit findings note that <strong>"search features could use improvement to yield more relevant results"</strong> and that many pages are "link heavy which may be confusing to users navigating the site." The FAQ page search feature was specifically noted as "not strong." Improvements (Epic 5.3) directly reduce the time users spend searching and lead to a better overall experience.</p>
+              </div>
+            </div>
+            <div class="user-story" role="note" aria-label="Example user story for Epic 4">
+              <span class="user-story-label">Example User Story</span>
+              <blockquote>
+                As a user seeking help, I want the FAQ search feature to be robust and provide accurate, relevant results to my queries so that I can quickly find specific information or services.
+              </blockquote>
+            </div>
+          </div>
+        </article>
+
+        <!-- ── Epic 5 ── -->
+        <article class="epic-accordion" id="epic-5-detail">
+          <button
+            class="accordion-trigger"
+            aria-expanded="false"
+            aria-controls="epic-5-panel"
+            id="epic-5-btn"
+            type="button"
+          >
+            <span class="accordion-badge" aria-hidden="true">5</span>
+            <span class="accordion-title">
+              Refine E-commerce and Business Service Modules for Transactional Efficiency
+            </span>
+            <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div
+            id="epic-5-panel"
+            class="accordion-panel"
+            role="region"
+            aria-labelledby="epic-5-btn"
+          >
+            <div class="detail-grid">
+              <div class="detail-card">
+                <h4>Focus</h4>
+                <p>Streamline complex transactional processes for both retail (e-commerce) and business customers, aiming to reduce operational costs through improved self-service completion rates and decreased manual intervention. User experience is enhanced through clearer, more efficient workflows.</p>
+              </div>
+              <div class="detail-card">
+                <h4>Rationale</h4>
+                <p><strong>"The Postal Store – Home"</strong> and <strong>"Buy Stamps"</strong> are identified as High LOE to maintain due to frequent product updates. Business tools like the <strong>"Business Postage Price Calculator"</strong> are not brand style compliant and could be integrated with live data to prevent manual updates. Optimizing these modules (Epic 2.3) reduces errors, increases self-service completion, and lowers back-end support burden.</p>
+              </div>
+            </div>
+            <div class="user-story" role="note" aria-label="Example user story for Epic 5">
+              <span class="user-story-label">Example User Story</span>
+              <blockquote>
+                As a business user, I want the "Verify Postage" page to have live, real-time pricing and sizing information for accurate calculations, rather than relying on manual updates or separate tools, which would reduce manual effort for content teams and improve accuracy for users.
+              </blockquote>
+            </div>
+          </div>
+        </article>
+
+      </div><!-- /.detail-inner -->
+    </section>
+
+    <!-- ============================================================
+         Priority Matrix Table
+    ============================================================ -->
+    <section class="matrix-section" aria-labelledby="matrix-heading">
+      <div class="table-wrapper">
+        <div class="section-header" style="margin-bottom:1.5rem;">
+          <h2 id="matrix-heading">Epic Priority Matrix</h2>
+          <p>Summary of each epic's level of effort, user impact, and strategic priority.</p>
+        </div>
+        <table aria-describedby="matrix-heading">
+          <caption class="visually-hidden">Epic Priority Matrix: LOE, User Impact, and Strategic Priority for all 5 epics</caption>
+          <thead>
+            <tr>
+              <th scope="col">Epic</th>
+              <th scope="col">Title</th>
+              <th scope="col">Maint. LOE</th>
+              <th scope="col">User Impact</th>
+              <th scope="col">Strategic Priority</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1</strong></td>
+              <td>Optimize Interactive Tools &amp; User Journeys</td>
+              <td><span class="badge badge-high">High</span></td>
+              <td><span class="badge badge-high">High</span></td>
+              <td>
+                <span class="priority-dot dot-critical" aria-hidden="true"></span>
+                Critical
+              </td>
+            </tr>
+            <tr>
+              <td><strong>2</strong></td>
+              <td>Centralize Content Management &amp; IA</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><span class="badge badge-high">High</span></td>
+              <td>
+                <span class="priority-dot dot-high" aria-hidden="true"></span>
+                High
+              </td>
+            </tr>
+            <tr>
+              <td><strong>3</strong></td>
+              <td>Modernize UI &amp; Brand / 508 Compliance</td>
+              <td><span class="badge badge-high">High</span></td>
+              <td><span class="badge badge-high">High</span></td>
+              <td>
+                <span class="priority-dot dot-critical" aria-hidden="true"></span>
+                Critical
+              </td>
+            </tr>
+            <tr>
+              <td><strong>4</strong></td>
+              <td>Enhance Search &amp; Navigation</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td>
+                <span class="priority-dot dot-high" aria-hidden="true"></span>
+                High
+              </td>
+            </tr>
+            <tr>
+              <td><strong>5</strong></td>
+              <td>Refine E-commerce &amp; Business Modules</td>
+              <td><span class="badge badge-high">High</span></td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td>
+                <span class="priority-dot dot-standard" aria-hidden="true"></span>
+                Standard
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CTA Banner -->
+    <section class="cta-section" aria-labelledby="cta-heading">
+      <div class="cta-inner">
+        <h2 id="cta-heading">Ready to Move Forward?</h2>
+        <p>
+          These epics are ready for sprint planning and stakeholder review.
+          Connect with the USPS.com product team to prioritize and schedule delivery.
+        </p>
+        <div class="btn-group">
+          <a href="#epics-overview" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"/></svg>
+            Review All Epics
+          </a>
+          <a href="#main-content" class="btn btn-outline">
+            Back to Top
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       Site Footer
+  ============================================================ -->
+  <footer class="site-footer" role="contentinfo" aria-label="Site footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <p class="brand-name">USPS</p>
+        <p>United States Postal Service&reg;<br>
+          Delivering trust since 1775. USPS.com strategic requirements document.</p>
+      </div>
+
+      <nav class="footer-col" aria-label="Footer: Send &amp; Ship links">
+        <h3>Send &amp; Ship</h3>
+        <ul>
+          <li><a href="#">Calculate Price</a></li>
+          <li><a href="#">Schedule Pickup</a></li>
+          <li><a href="#">Find Zip Code</a></li>
+          <li><a href="#">Click-N-Ship</a></li>
+        </ul>
+      </nav>
+
+      <nav class="footer-col" aria-label="Footer: Track &amp; Manage links">
+        <h3>Track &amp; Manage</h3>
+        <ul>
+          <li><a href="#">Track a Package</a></li>
+          <li><a href="#">Informed Delivery</a></li>
+          <li><a href="#">Redelivery</a></li>
+          <li><a href="#">Hold Mail</a></li>
+        </ul>
+      </nav>
+
+      <nav class="footer-col" aria-label="Footer: About links">
+        <h3>About USPS</h3>
+        <ul>
+          <li><a href="#">Newsroom</a></li>
+          <li><a href="#">Forms &amp; Publications</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer-bar">
+      <p>
+        &copy; 2026 United States Postal Service. All Rights Reserved.
+      </p>
+      <nav aria-label="Legal navigation">
+        <a href="#">Privacy Policy</a> &nbsp;&bull;&nbsp;
+        <a href="#">Terms of Use</a> &nbsp;&bull;&nbsp;
+        <a href="#">Accessibility</a> &nbsp;&bull;&nbsp;
+        <a href="#">No FEAR Act EEO Data</a>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       Minimal JS – Accordion (keyboard accessible)
+  ============================================================ -->
+  <script>
+    (function () {
+      'use strict';
+
+      var triggers = document.querySelectorAll('.accordion-trigger');
+
+      triggers.forEach(function (trigger) {
+        trigger.addEventListener('click', function () {
+          var expanded = this.getAttribute('aria-expanded') === 'true';
+          var panelId  = this.getAttribute('aria-controls');
+          var panel    = document.getElementById(panelId);
+
+          // Toggle this accordion
+          this.setAttribute('aria-expanded', String(!expanded));
+          panel.classList.toggle('is-open', !expanded);
+        });
+
+        // Keyboard: Enter and Space already fire click on <button>;
+        // Arrow keys for roving focus among triggers
+        trigger.addEventListener('keydown', function (event) {
+          var idx = Array.prototype.indexOf.call(triggers, this);
+          if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            (triggers[idx + 1] || triggers[0]).focus();
+          }
+          if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            (triggers[idx - 1] || triggers[triggers.length - 1]).focus();
+          }
+          if (event.key === 'Home') {
+            event.preventDefault();
+            triggers[0].focus();
+          }
+          if (event.key === 'End') {
+            event.preventDefault();
+            triggers[triggers.length - 1].focus();
+          }
+        });
+      });
+    }());
+  </script>
+
+</body>
+</html>
